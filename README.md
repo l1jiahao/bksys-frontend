@@ -16,3 +16,9 @@ yarn install
 yarn run serve
 ```
 
+### VSCode 开发 
+- 安装 `eslint` 插件, 方便检测/修改代码风格以通过 `eslint` 检测
+
+### git
+- 尽量避免修改同一个文件
+- 先 `commit` 后 `pull`, 之后再 `push` 确保不会和远程冲突
