@@ -36,5 +36,8 @@ export default {
     'menu.account.center': 'Account Center',
     'menu.account.settings': 'Account Settings',
     'menu.account.trigger': 'Trigger Error',
-    'menu.account.logout': 'Logout'
+    'menu.account.logout': 'Logout',
+    'menu.classroom': 'Classroom',
+    'menu.classroom.search': 'Search Classroom',
+    'menu.classroom.desk': 'Desk'
 }

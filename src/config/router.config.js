@@ -1,7 +1,6 @@
 // eslint-disable-next-line
 import { UserLayout, BasicLayout, BlankLayout } from '@/layouts'
 import { bxAnaalyse } from '@/core/icons'
-
 const RouteView = {
   name: 'RouteView',
   render: h => h('router-view')
@@ -268,8 +267,29 @@ export const asyncRouterMap = [
             ]
           }
         ]
+      },
+      {
+        path: '/classroom',
+        // 下面的 name 方便在路由守卫中使用
+        name: 'classroom',
+        component: RouteView,
+        redirect: '/classroom/search',
+        meta: { title: 'menu.classroom', icon: 'profile', keepAlive: true, permission: ['user'] },
+        children: [
+          {
+            path: '/classroom/search',
+            name: 'ClassroomSearch',
+            component: () => import(/* webpackChunkName: "result" */ '@/views/result/Success'),
+            meta: { title: 'menu.classroom.search', keepAlive: true, hiddenHeaderContent: false, permission: ['user'] }
+          },
+          {
+            path: '/classroom/desk',
+            name: 'ClassroomDesk',
+            component: () => import(/* webpackChunkName: "result" */ '@/views/result/Error'),
+            meta: { title: 'menu.classroom.desk', keepAlive: true, hiddenHeaderContent: false, permission: ['user'] }
+          }
+        ]
       }
-
       // other
       /*
       {
