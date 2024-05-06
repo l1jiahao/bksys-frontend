@@ -29,17 +29,18 @@ export const asyncRouterMap = [
             component: () => import('@/views/dashboard/Analysis'),
             meta: { title: 'menu.dashboard.analysis', keepAlive: false, permission: ['dashboard'] }
           },
-          // 外部链接
-          // {
-          //   path: 'https://www.baidu.com/',
-          //   name: 'Monitor',
-          //   meta: { title: 'menu.dashboard.monitor', target: '_blank' }
-          // },
           {
             path: '/dashboard/workplace',
             name: 'Workplace',
             component: () => import('@/views/dashboard/Workplace'),
             meta: { title: 'menu.dashboard.workplace', keepAlive: true, permission: ['dashboard'] }
+          },
+          // 外部链接
+          {
+            // 外部链接采用 http 路径
+            path: 'https://devcloud.cn-east-3.huaweicloud.com/projectman/scrum/28cc6b0b5b7b4b69981d6105b1dfcece/home',
+            name: 'CodeArts',
+            meta: { title: 'menu.dashboard.codearts', target: '_blank' }
           }
         ]
       },

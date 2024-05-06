@@ -4,6 +4,7 @@ export default {
     'menu.dashboard': 'Dashboard',
     'menu.dashboard.analysis': 'Analysis',
     'menu.dashboard.monitor': 'Monitor',
+    'menu.dashboard.codearts': 'Huawei Cloud',
     'menu.dashboard.workplace': 'Workplace',
     'menu.form': 'Form',
     'menu.form.basic-form': 'Basic Form',
