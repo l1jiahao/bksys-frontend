@@ -1,6 +1,7 @@
 <template>
+  <!-- 先用 template 新建可渲染内容, 之后用 card 包裹所有内容 -->
   <a-card :bordered="false">
-    <a-result status="success" :title="result.title" :sub-title="result.description">
+    <a-result status="error" :title="result.title" :sub-title="result.description">
       <template #extra>
         <a-button type="primary">{{ $t('result.success.btn-return') }}</a-button>
         <a-button style="margin-left: 8px">{{ $t('result.success.btn-project') }}</a-button>

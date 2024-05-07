@@ -24,6 +24,12 @@ yarn run serve
 - 先 `commit` 后 `pull`, 之后再 `push` 确保不会和远程冲突
 
 ### 项目开发
+[Vue.js 文档](https://v2.cn.vuejs.org/v2/guide/syntax.html)
+
+[antd vue pro 文档](https://pro.antdv.com/docs/getting-started)
+
+[组件库](https://www.antdv.com/components/overview-cn)
+
 主要关注 `src` 文件夹中的内容
 ![vue 结构](./docs/image.png)
 - `api`, 里面放和后端的请求

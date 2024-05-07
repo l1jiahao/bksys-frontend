@@ -268,6 +268,7 @@ export const asyncRouterMap = [
           }
         ]
       },
+      // 教室相关
       {
         path: '/classroom',
         // 下面的 name 方便在路由守卫中使用
@@ -277,9 +278,15 @@ export const asyncRouterMap = [
         meta: { title: 'menu.classroom', icon: 'profile', keepAlive: true, permission: ['user'] },
         children: [
           {
+            path: '/classroom/register',
+            name: 'ClassroomRegister',
+            component: () => import(/* webpackChunkName: "result" */ '@/views/result/Success'),
+            meta: { title: 'menu.classroom.register', keepAlive: true, hiddenHeaderContent: false, permission: ['user'] }
+          },
+          {
             path: '/classroom/search',
             name: 'ClassroomSearch',
-            component: () => import(/* webpackChunkName: "result" */ '@/views/result/Success'),
+            component: () => import(/* webpackChunkName: "result" */ '@/views/classroom/RoomSearch'),
             meta: { title: 'menu.classroom.search', keepAlive: true, hiddenHeaderContent: false, permission: ['user'] }
           },
           {

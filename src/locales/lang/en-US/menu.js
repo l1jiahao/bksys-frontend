@@ -38,6 +38,7 @@ export default {
     'menu.account.trigger': 'Trigger Error',
     'menu.account.logout': 'Logout',
     'menu.classroom': 'Classroom',
+    'menu.classroom.register': 'Register Classroom',
     'menu.classroom.search': 'Search Classroom',
     'menu.classroom.desk': 'Desk'
 }

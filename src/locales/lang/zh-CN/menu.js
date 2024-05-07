@@ -38,6 +38,7 @@ export default {
     'menu.account.trigger': '触发报错',
     'menu.account.logout': '退出登录',
     'menu.classroom': '自习室',
+    'menu.classroom.register': '登记教室',
     'menu.classroom.search': '查找教室',
     'menu.classroom.desk': '教室详情'
 }
