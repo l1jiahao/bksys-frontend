@@ -68,6 +68,7 @@
       <!-- 表格操作 -->
       <div class="table-operator">
         <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
+        <a-button type="primary" @click="handelFindAll">test mock</a-button>
         <a-button type="danger">已选择 {{ selectedRowKeys.length }}</a-button>
         <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
@@ -129,6 +130,7 @@
 import moment from 'moment'
 import { STable, Ellipsis } from '@/components'
 import { getRoleList, getServiceList } from '@/api/manage'
+import { findAll } from '@/api/test_mock'
 
 import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from './modules/CreateForm'
@@ -243,6 +245,15 @@ export default {
     }
   },
   methods: {
+    async handelFindAll () {
+      const response = await findAll().then(response => {
+        return response.data
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+      console.log(response.message.data)
+    },
     handleAdd () {
       this.mdl = null
       this.visible = true
