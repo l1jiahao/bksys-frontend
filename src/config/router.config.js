@@ -292,7 +292,7 @@ export const asyncRouterMap = [
           {
             path: '/classroom/desk',
             name: 'ClassroomDesk',
-            component: () => import(/* webpackChunkName: "result" */ '@/views/classroom/TestTable'),
+            component: () => import(/* webpackChunkName: "result" */ '@/views/classroom/DeskList'),
             meta: { title: 'menu.classroom.desk', keepAlive: true, hiddenHeaderContent: false, permission: ['user'] }
           }
         ]

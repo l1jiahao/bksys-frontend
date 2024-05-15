@@ -4,7 +4,7 @@
       <!-- 搜索栏 -->
       <a-button type="primary" icon="plus" @click="handleFindClassroom"> mock classroom </a-button>
       <a-table :columns="column" :data-source="classroom" :pagination="{ pageSize: 10 }" >
-        <a slot="room_name" slot-scope="text">{{ text }}</a>
+        <a slot="room_name" slot-scope="text, record" @click="goToRoom(record)">{{ text }}</a>
         <a-tag slot="status" slot-scope="tags" :color="tags === '开放' ? 'green' : tags === '已关闭' ? 'red' : 'blue'">
           {{ tags }}
         </a-tag></a-table>
@@ -136,14 +136,23 @@ export default {
       console.log(this.location)
     },
     async handleFindClassroom () {
-      var data = JSON.stringify({
-        'building': '智华楼A',
-        'floor': '2'
-      })
-      const res = await findClassroom(data).then(res => res.data.message.data)
+      const res = await findClassroom().then(res => res.data.message.data)
       this.classroom = res
       this.uniqueBuildings = [...new Set(this.classroom.map(item => item.building))]
       this.uniqueStatus = [...new Set(this.classroom.map(item => item.status))]
+    },
+    goToRoom (record) {
+      const path = '/classroom/desk'
+      const query = {
+        room_id: record.room_id,
+        row_count: record.row_count,
+        col_count: record.col_count,
+        room_name: record.room_name
+      }
+      this.$router.push({
+        path: path,
+        query: query
+      })
     }
   }
 }
