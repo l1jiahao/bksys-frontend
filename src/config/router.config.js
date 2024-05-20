@@ -1,7 +1,6 @@
 // eslint-disable-next-line
 import { UserLayout, BasicLayout, BlankLayout } from '@/layouts'
 import { bxAnaalyse } from '@/core/icons'
-
 const RouteView = {
   name: 'RouteView',
   render: h => h('router-view')
@@ -29,17 +28,18 @@ export const asyncRouterMap = [
             component: () => import('@/views/dashboard/Analysis'),
             meta: { title: 'menu.dashboard.analysis', keepAlive: false, permission: ['dashboard'] }
           },
-          // 外部链接
-          // {
-          //   path: 'https://www.baidu.com/',
-          //   name: 'Monitor',
-          //   meta: { title: 'menu.dashboard.monitor', target: '_blank' }
-          // },
           {
             path: '/dashboard/workplace',
             name: 'Workplace',
             component: () => import('@/views/dashboard/Workplace'),
             meta: { title: 'menu.dashboard.workplace', keepAlive: true, permission: ['dashboard'] }
+          },
+          // 外部链接
+          {
+            // 外部链接采用 http 路径
+            path: 'https://devcloud.cn-east-3.huaweicloud.com/projectman/scrum/28cc6b0b5b7b4b69981d6105b1dfcece/home',
+            name: 'CodeArts',
+            meta: { title: 'menu.dashboard.codearts', target: '_blank' }
           }
         ]
       },
@@ -289,8 +289,36 @@ export const asyncRouterMap = [
             ]
           }
         ]
+      },
+      // 教室相关
+      {
+        path: '/classroom',
+        // 下面的 name 方便在路由守卫中使用
+        name: 'classroom',
+        component: RouteView,
+        redirect: '/classroom/search',
+        meta: { title: 'menu.classroom', icon: 'profile', keepAlive: true, permission: ['user'] },
+        children: [
+          {
+            path: '/classroom/register',
+            name: 'ClassroomRegister',
+            component: () => import(/* webpackChunkName: "result" */ '@/views/result/Success'),
+            meta: { title: 'menu.classroom.register', keepAlive: true, hiddenHeaderContent: false, permission: ['user'] }
+          },
+          {
+            path: '/classroom/search',
+            name: 'ClassroomSearch',
+            component: () => import(/* webpackChunkName: "result" */ '@/views/classroom/RoomSearch'),
+            meta: { title: 'menu.classroom.search', keepAlive: true, hiddenHeaderContent: false, permission: ['user'] }
+          },
+          {
+            path: '/classroom/desk',
+            name: 'ClassroomDesk',
+            component: () => import(/* webpackChunkName: "result" */ '@/views/classroom/DeskList'),
+            meta: { title: 'menu.classroom.desk', keepAlive: true, hiddenHeaderContent: false, permission: ['user'] }
+          }
+        ]
       }
-
       // other
       /*
       {

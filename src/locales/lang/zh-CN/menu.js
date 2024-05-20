@@ -4,6 +4,7 @@ export default {
     'menu.dashboard': '仪表盘',
     'menu.dashboard.analysis': '分析页',
     'menu.dashboard.monitor': '监控页',
+    'menu.dashboard.codearts': '华为云',
     'menu.dashboard.workplace': '工作台',
     'menu.form': '表单页',
     'menu.form.basic-form': '基础表单',
@@ -35,5 +36,9 @@ export default {
     'menu.account.center': '个人中心',
     'menu.account.settings': '个人设置',
     'menu.account.trigger': '触发报错',
-    'menu.account.logout': '退出登录'
+    'menu.account.logout': '退出登录',
+    'menu.classroom': '自习室',
+    'menu.classroom.register': '登记教室',
+    'menu.classroom.search': '查找教室',
+    'menu.classroom.desk': '教室详情'
 }

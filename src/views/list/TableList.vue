@@ -1,7 +1,9 @@
 <template>
   <page-header-wrapper>
     <a-card :bordered="false">
+      <!-- 搜索栏 -->
       <div class="table-page-search-wrapper">
+        <!-- 使用的 a-form 排列这些搜索框 -->
         <a-form layout="inline">
           <a-row :gutter="48">
             <a-col :md="8" :sm="24">
@@ -18,6 +20,7 @@
                 </a-select>
               </a-form-item>
             </a-col>
+            <!-- 是否展开 -->
             <template v-if="advanced">
               <a-col :md="8" :sm="24">
                 <a-form-item label="调用次数">
@@ -62,8 +65,10 @@
         </a-form>
       </div>
 
+      <!-- 表格操作 -->
       <div class="table-operator">
         <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
+        <a-button type="danger">已选择 {{ selectedRowKeys.length }}</a-button>
         <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
             <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
@@ -89,9 +94,11 @@
         <span slot="serial" slot-scope="text, record, index">
           {{ index + 1 }}
         </span>
+
         <span slot="status" slot-scope="text">
           <a-badge :status="text | statusTypeFilter" :text="text | statusFilter" />
         </span>
+
         <span slot="description" slot-scope="text">
           <ellipsis :length="4" tooltip>{{ text }}</ellipsis>
         </span>
