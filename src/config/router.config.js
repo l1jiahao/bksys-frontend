@@ -150,6 +150,28 @@ export const asyncRouterMap = [
         ]
       },
 
+      // history
+      {
+        path: '/history',
+        name: 'history',
+        component: RouteView,
+        redirect: '/history/record',
+        meta: { title: 'History', icon: 'history', permission: ['user'] },
+        children: [
+          {
+            path: '/history/record',
+            name: 'HistoryRecords',
+            component: () => import('@/views/history/HistoryRecords'),
+            meta: { title: 'My records', permission: ['user'] }
+          },
+          {
+            path: '/history/check',
+            name: 'CheckIn',
+            component: () => import('@/views/history/CheckIn'),
+            meta: { title: 'Check in here', permission: ['user'] }
+          }
+        ]
+      },
       // result
       {
         path: '/result',
