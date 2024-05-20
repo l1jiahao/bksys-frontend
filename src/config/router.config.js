@@ -162,13 +162,13 @@ export const asyncRouterMap = [
             path: '/history/record',
             name: 'HistoryRecords',
             component: () => import('@/views/history/HistoryRecords'),
-            meta: { title: 'My records', permission: ['user'] }
+            meta: { title: '历史预约记录', permission: ['user'] }
           },
           {
             path: '/history/check',
-            name: 'CheckIn',
-            component: () => import('@/views/history/CheckIn'),
-            meta: { title: 'Check in here', permission: ['user'] }
+            name: 'DataAnalysis',
+            component: () => import('@/views/history/DataAnalysis'),
+            meta: { title: '预约数据分析', permission: ['user'] }
           }
         ]
       },
