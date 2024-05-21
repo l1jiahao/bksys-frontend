@@ -1,61 +1,48 @@
 <template>
   <div class="account-settings-info-view">
-    <a-row :gutter="16" type="flex" justify="center">
-      <a-col :order="isMobile ? 2 : 1" :md="24" :lg="16">
+    <a-row :gutter="16" type="flex" justify="center" >
+      <a-col :md="24" :lg="16">
 
-        <a-form layout="vertical">
-          <a-form-item
-            :label="$t('account.settings.basic.nickname')"
-          >
-            <a-input :placeholder="$t('account.settings.basic.nickname-message')" />
-          </a-form-item>
-          <a-form-item
-            :label="$t('account.settings.basic.profile')"
-          >
-            <a-textarea rows="4" :placeholder="$t('account.settings.basic.profile-message')"/>
+        <a-form layout="vertical" @submit="handleSubmit" :form="form">
+          <a-form-item :label="$t('account.settings.basic.nickname')" >
+            <a-input
+              v-decorator="['newname', { rules: [{ required: true, message: 'Please input your name!' }] }]"
+            />
           </a-form-item>
 
-          <a-form-item
-            :label="$t('account.settings.basic.email')"
-            :required="false"
-          >
-            <a-input placeholder="example@ant.design"/>
+          <a-form-item :label="$t('account.settings.basic.email')" >
+            <a-input
+              v-decorator="['newemail', { rules: [{ required: true, message: 'Please input your email!' }] }]"
+              placeholder="example@ant.design"
+            />
           </a-form-item>
 
           <a-form-item>
-            <a-button type="primary">{{ $t('account.settings.basic.update') }}</a-button>
+            <a-button type="primary" html-type="submit">{{ $t('account.settings.basic.update') }}</a-button>
           </a-form-item>
         </a-form>
 
       </a-col>
-      <a-col :order="1" :md="24" :lg="8" :style="{ minHeight: '180px' }">
-        <div class="ant-upload-preview" @click="$refs.modal.edit(1)" >
-          <a-icon type="cloud-upload-o" class="upload-icon"/>
-          <div class="mask">
-            <a-icon type="plus" />
-          </div>
-          <img :src="option.img"/>
-        </div>
-      </a-col>
-
     </a-row>
-
-    <avatar-modal ref="modal" @ok="setavatar"/>
-
   </div>
 </template>
 
 <script>
-import AvatarModal from './AvatarModal'
 import { baseMixin } from '@/store/app-mixin'
+import { editInfo } from '@/api/account_mock'
 
 export default {
   mixins: [baseMixin],
   components: {
-    AvatarModal
   },
   data () {
     return {
+      form: this.$form.createForm(this, { name: 'dynamic_rule' }),
+      password: null,
+      token: null,
+      account: null,
+      email: null,
+      name: null,
       // cropper
       preview: {},
       option: {
@@ -75,9 +62,42 @@ export default {
       }
     }
   },
+  created () {
+    // this.user_id = localStorage.getItem('user_id')
+    this.token = 'gsidgwqk'
+    this.account = 'test'
+    this.email = 'sudhw@sjd.com'
+    this.name = 'wang'
+    this.password = 'test'
+  },
   methods: {
-    setavatar (url) {
-      this.option.img = url
+    async handleSubmit (e) {
+      e.preventDefault()
+      this.form.validateFields(async (err, values) => {
+        if (!err) {
+          console.log('Received values of form: ', values)
+          const requestParameters = {
+            token: this.token,
+            name: values.newname,
+            account: this.account,
+            password: this.password,
+            email: values.newemail
+          }
+          try {
+              const res = await editInfo(requestParameters)
+              const result = res.data.message.content
+              console.log(result)
+              if (result === '修改成功') {
+                this.form.resetFields()
+                this.$message.info('修改成功！')
+              } else {
+                this.$message.info('修改失败！')
+              }
+          } catch (error) {
+              console.error('Error fetching records:', error)
+          }
+        }
+      })
     }
   }
 }
