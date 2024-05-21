@@ -5,6 +5,8 @@
         <span slot="action" slot-scope="text, record">
           <template>
             <a @click="handleCheckIn(record)">签到</a>
+            <a-divider type="vertical" />
+            <a @click="handleCancelRe(record)">取消预约</a>
           </template>
         </span>
       </a-table>
@@ -22,7 +24,7 @@
 
 <script>
 import { STable, Ellipsis } from '@/components'
-import { findRecord } from '@/api/history_mock'
+import { findRecord, checkIn } from '@/api/history_mock'
 import CreateForm from './modules/CreateForm'
 
 const columns = [
@@ -69,6 +71,9 @@ const columns = [
     }
 ]
 
+// TODO: 状态的不同展示；只有待签到记录可以点击签到；user_id的逻辑调整；
+// TODO LATER: 取消预约（通过12）；根据状态不同显示“签到或取消”以及“再次预约”（通过11）
+
 /* const statusMap = {
   0: {
     status: 'default',
@@ -102,8 +107,6 @@ export default {
         visible: false,
         confirmLoading: false,
         mdl: null,
-        // 高级搜索 展开/关闭
-        advanced: false,
         // 查询参数
         user_id: null,
         records: []
@@ -128,11 +131,57 @@ export default {
         handleCheckIn (record) {
             this.visible = true
             this.mdl = { ...record }
+            console.log(record)
         },
         handleCancel () {
             this.visible = false
             const form = this.$refs.createModal.form
             form.resetFields()
+        },
+        handleOk () {
+          const form = this.$refs.createModal.form
+          this.confirmLoading = true
+          form.validateFields((errors, values) => {
+            if (!errors) {
+              console.log('values', values)
+              new Promise((resolve, reject) => {
+                this.handleValidation(this.mdl.record_id, values.check_code).then(result => {
+                  resolve(result)
+                }).catch(error => {
+                  reject(error)
+                })
+              }).then(res => {
+                this.visible = false
+                this.confirmLoading = false
+                form.resetFields()
+                if (res === true) {
+                  this.$message.info('签到成功！')
+                  // TODO, refresh the table here
+                } else {
+                  this.$message.info('签到失败！')
+                }
+              }).catch(error => {
+                this.confirmLoading = false
+                this.$message.info('签到失败！')
+                console.error('签到失败，错误信息：', error)
+              })
+            } else {
+              this.confirmLoading = false
+              this.$message.info('签到失败！')
+            }
+          })
+        },
+        async handleValidation (id, code) {
+          const requestParameters = { record_id: id, check_code: code }
+          try {
+                const res = await checkIn(requestParameters)
+                const vali = res.data.message.content
+                console.log(vali)
+                if (vali === '签到成功') return true
+                else return false
+            } catch (error) {
+                console.error('Error fetching records:', error)
+            }
         }
     }
 }

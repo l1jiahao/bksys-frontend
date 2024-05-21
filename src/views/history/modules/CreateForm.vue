@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    title="新建规则"
+    title="签到"
     :width="640"
     :visible="visible"
     :confirmLoading="loading"
@@ -9,12 +9,8 @@
   >
     <a-spin :spinning="loading">
       <a-form :form="form" v-bind="formLayout">
-        <!-- 检查是否有 id 并且大于0，大于0是修改。其他是新增，新增不显示主键ID -->
-        <a-form-item v-show="model && model.id > 0" label="主键ID">
-          <a-input v-decorator="['id', { initialValue: 0 }]" disabled />
-        </a-form-item>
-        <a-form-item label="描述">
-          <a-input v-decorator="['description', {rules: [{required: true, min: 5, message: '请输入至少五个字符的规则描述！'}]}]" />
+        <a-form-item label="签到码">
+          <a-input v-decorator="['check_code', {rules: [{required: true, message: '请输入签到码'}]}]" />
         </a-form-item>
       </a-form>
     </a-spin>
@@ -25,7 +21,7 @@
 import pick from 'lodash.pick'
 
 // 表单字段
-const fields = ['description', 'id']
+const fields = ['check_code']
 
 export default {
   props: {
