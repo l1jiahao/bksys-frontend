@@ -1,6 +1,7 @@
 import storage from 'store'
 import expirePlugin from 'store/plugins/expire'
 import { login, getInfo, logout } from '@/api/login'
+import { login as loginBksys } from '@/api/login_bksys'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { welcome } from '@/utils/util'
 
@@ -49,6 +50,24 @@ const user = {
       })
     },
 
+    // 登录
+    LoginBksys ({ commit }, userInfo) {
+      return new Promise((resolve, reject) => {
+        loginBksys(userInfo).then(response => {
+          const result = response.data
+          if (result.code !== 1) {
+            reject(new Error(0))
+          } else {
+          storage.set(ACCESS_TOKEN, result.message.token, new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
+          storage.set('username', result.message.name)
+          commit('SET_TOKEN', result.message.token)
+          resolve()
+          }
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
     // 获取用户信息
     GetInfo ({ commit }) {
       return new Promise((resolve, reject) => {

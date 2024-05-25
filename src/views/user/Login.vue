@@ -5,7 +5,7 @@
       class="user-layout-login"
       ref="formLogin"
       :form="form"
-      @submit="handleSubmit"
+      @submit="handleSubmitBksys"
     >
       <a-tabs
         :activeKey="customActiveKey"
@@ -115,6 +115,7 @@
 
 <script>
 import md5 from 'md5'
+import storage from 'store'
 import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
 import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
@@ -154,7 +155,7 @@ export default {
     // this.requiredTwoStepCaptcha = true
   },
   methods: {
-    ...mapActions(['Login', 'Logout']),
+    ...mapActions(['Login', 'LoginBksys', 'Logout']),
     // handler
     handleUsernameOrEmail (rule, value, callback) {
       const { state } = this
@@ -171,7 +172,9 @@ export default {
       // this.form.resetFields()
     },
     handleSubmit (e) {
+      console.log('submit', e)
       e.preventDefault()
+      // 从 this 中获取数据
       const {
         form: { validateFields },
         state,
@@ -203,6 +206,49 @@ export default {
         }
       })
     },
+    handleSubmitBksys (e) {
+      e.preventDefault()
+      // 从 this 中获取数据
+      const {
+        form: { validateFields },
+        state,
+        customActiveKey,
+        LoginBksys
+      } = this
+
+      state.loginBtn = true
+
+      const validateFieldsKey = customActiveKey === 'tab1' ? ['username', 'password'] : ['mobile', 'captcha']
+
+      validateFields(validateFieldsKey, { force: true }, (err, values) => {
+        if (!err) {
+          // console.log('login form', values)
+          const loginParams = { ...values }
+          delete loginParams.username
+          loginParams[!state.loginType ? 'email' : 'username'] = values.username
+          loginParams.password = values.password
+          LoginBksys(JSON.stringify(loginParams))
+            .then((res) => {
+              this.loginSuccess(res)
+            })
+            .catch(err => {
+              if (err.message === '0') {
+                this.$message.error('请检查账号密码正确性')
+              } else {
+                this.requestFailed(err)
+              }
+            })
+            .finally(() => {
+              state.loginBtn = false
+            })
+        } else {
+          setTimeout(() => {
+            state.loginBtn = false
+          }, 600)
+        }
+      })
+    },
+
     getCaptcha (e) {
       e.preventDefault()
       const { form: { validateFields }, state } = this
@@ -247,7 +293,6 @@ export default {
       })
     },
     loginSuccess (res) {
-      console.log(res)
       // check res.homePage define, set $router.push name res.homePage
       // Why not enter onComplete
       /*
@@ -264,7 +309,7 @@ export default {
       setTimeout(() => {
         this.$notification.success({
           message: '欢迎',
-          description: `${timeFix()}，欢迎回来`
+          description: `${timeFix()}，欢迎回来, ${storage.get('username')}`
         })
       }, 1000)
       this.isLoginError = false
