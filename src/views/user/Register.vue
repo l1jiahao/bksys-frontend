@@ -6,6 +6,24 @@
         <a-input
           size="large"
           type="text"
+          :placeholder="$t('user.register.name.placeholder')"
+          v-decorator="['name', {rules: [{ required: true, message: $t('user.name.required') }], validateTrigger: ['change', 'blur']}]"
+        ></a-input>
+      </a-form-item>
+
+      <a-form-item>
+        <a-input
+          size="large"
+          type="text"
+          :placeholder="$t('user.register.account.placeholder')"
+          v-decorator="['account', {rules: [{ required: true, message: $t('user.account.required') }], validateTrigger: ['change', 'blur']}]"
+        ></a-input>
+      </a-form-item>
+
+      <a-form-item>
+        <a-input
+          size="large"
+          type="text"
           :placeholder="$t('user.register.email.placeholder')"
           v-decorator="['email', {rules: [{ required: true, type: 'email', message: $t('user.email.required') }], validateTrigger: ['change', 'blur']}]"
         ></a-input>
@@ -44,14 +62,14 @@
         ></a-input-password>
       </a-form-item>
 
-      <a-form-item>
+      <!-- <a-form-item>
         <a-input size="large" :placeholder="$t('user.login.mobile.placeholder')" v-decorator="['mobile', {rules: [{ required: true, message: $t('user.phone-number.required'), pattern: /^1[3456789]\d{9}$/ }, { validator: this.handlePhoneCheck } ], validateTrigger: ['change', 'blur'] }]">
           <a-select slot="addonBefore" size="large" defaultValue="+86">
             <a-select-option value="+86">+86</a-select-option>
             <a-select-option value="+87">+87</a-select-option>
           </a-select>
         </a-input>
-      </a-form-item>
+      </a-form-item> -->
       <!--<a-input-group size="large" compact>
             <a-select style="width: 20%" size="large" defaultValue="+86">
               <a-select-option value="+86">+86</a-select-option>
@@ -60,7 +78,7 @@
             <a-input style="width: 80%" size="large" placeholder="11 位手机号"></a-input>
           </a-input-group>-->
 
-      <a-row :gutter="16">
+      <!-- <a-row :gutter="16">
         <a-col class="gutter-row" :span="16">
           <a-form-item>
             <a-input size="large" type="text" :placeholder="$t('user.login.mobile.verification-code.placeholder')" v-decorator="['captcha', {rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur'}]">
@@ -76,7 +94,7 @@
             @click.stop.prevent="getCaptcha"
             v-text="!state.smsSendBtn && $t('user.register.get-verification-code')||(state.time+' s')"></a-button>
         </a-col>
-      </a-row>
+      </a-row> -->
 
       <a-form-item>
         <a-button
@@ -85,7 +103,7 @@
           htmlType="submit"
           class="register-button"
           :loading="registerBtn"
-          @click.stop.prevent="handleSubmit"
+          @click.stop.prevent="handleSubmitBksys"
           :disabled="registerBtn">{{ $t('user.register.register') }}
         </a-button>
         <router-link class="login" :to="{ name: 'login' }">{{ $t('user.register.sign-in') }}</router-link>
@@ -99,6 +117,7 @@
 import { getSmsCaptcha } from '@/api/login'
 import { deviceMixin } from '@/store/device-mixin'
 import { scorePassword } from '@/utils/util'
+import { register } from '@/api/login_bksys'
 
 const levelNames = {
   0: 'user.password.strength.short',
@@ -204,12 +223,29 @@ export default {
       this.state.passwordLevelChecked = false
     },
 
-    handleSubmit () {
-      const { form: { validateFields }, state, $router } = this
+    // handleSubmit () {
+    //   const { form: { validateFields }, state, $router } = this
+    //   validateFields({ force: true }, (err, values) => {
+    //     if (!err) {
+    //       state.passwordLevelChecked = false
+    //       $router.push({ name: 'registerResult', params: { ...values } })
+    //     }
+    //   })
+    // },
+
+    handleSubmitBksys () {
+      const { form: { validateFields }, state } = this
       validateFields({ force: true }, (err, values) => {
         if (!err) {
           state.passwordLevelChecked = false
-          $router.push({ name: 'registerResult', params: { ...values } })
+          // console.log('values', values)
+          register(values).then(res => {
+            console.log('register res', res)
+            this.$router.push({ name: 'registerResult', params: { ...values } })
+          }).catch(err => {
+            this.requestFailed(err)
+          })
+          // $router.push({ name: 'registerResult', params: { ...values } })
         }
       })
     },

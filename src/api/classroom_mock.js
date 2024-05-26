@@ -3,7 +3,8 @@ var axios = require('axios')
 export function findClassroom (params) {
     var config = {
         method: 'post',
-        url: 'http://127.0.0.1:4523/m1/4444180-4090006-default/classroom/find',
+        // url: 'http://127.0.0.1:4523/m1/4444180-4090006-default/classroom/find',
+        url: '/api/classroom/find',
         headers: {
             'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
             'Content-Type': 'application/json'
@@ -13,9 +14,11 @@ export function findClassroom (params) {
 }
 
 export function findAllAddress () {
+    // 可用
     var config = {
         method: 'get',
-        url: 'http://127.0.0.1:4523/m1/4444180-4090006-default/address/findall',
+        // url: 'http://127.0.0.1:4523/m1/4444180-4090006-default/address/findall',
+        url: '/api/address/findall',
         headers: {
             'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
         }

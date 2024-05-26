@@ -226,7 +226,10 @@ export default {
           const loginParams = { ...values }
           delete loginParams.username
           loginParams[!state.loginType ? 'email' : 'username'] = values.username
+          loginParams.account = loginParams.username
+          delete loginParams.username
           loginParams.password = values.password
+          console.log('loginParams', loginParams)
           LoginBksys(JSON.stringify(loginParams))
             .then((res) => {
               this.loginSuccess(res)
