@@ -2,10 +2,9 @@
   <page-header-wrapper>
     <a-card :bordered="false">
       <!-- 搜索栏 -->
-      <a-button type="primary" icon="plus" @click="handleFindClassroom"> mock classroom </a-button>
       <a-table :columns="column" :data-source="classroom" :pagination="{ pageSize: 10 }" >
         <a slot="room_name" slot-scope="text, record" @click="goToRoom(record)">{{ text }}</a>
-        <a-tag slot="status" slot-scope="tags" :color="tags === '开放' ? 'green' : tags === '已关闭' ? 'red' : 'blue'">
+        <a-tag slot="status" slot-scope="tags" :color="tags === '开放' ? 'green' : tags === '故障' ? 'red' : 'blue'">
           {{ tags }}
         </a-tag></a-table>
     </a-card>
@@ -136,8 +135,18 @@ export default {
       console.log(this.location)
     },
     async handleFindClassroom () {
-      const res = await findClassroom().then(res => res.data.message.data)
+      const res = await findClassroom().then(res => res.data.message)
       this.classroom = res
+      const statusMap = {
+        1: '开放',
+        2: '关闭',
+        3: '故障'
+      }
+      this.classroom = res.map(item => ({
+        ...item,
+        status: statusMap[item.status]
+      }))
+
       this.uniqueBuildings = [...new Set(this.classroom.map(item => item.building))]
       this.uniqueStatus = [...new Set(this.classroom.map(item => item.status))]
     },

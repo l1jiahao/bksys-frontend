@@ -35,7 +35,8 @@ export function avaliDesk (params) {
 
     var config = {
         method: 'post',
-        url: 'http://127.0.0.1:4523/m1/4444180-4090006-default/classroom/avali_desk',
+        // url: 'http://127.0.0.1:4523/m1/4444180-4090006-default/classroom/avali_desk',
+        url: '/api/classroom/avali_desk',
         headers: {
             'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
             'Content-Type': 'application/json'
@@ -47,8 +48,9 @@ export function avaliDesk (params) {
 
 export function bookDesk (params) {
     var config = {
-        method: 'get',
-        url: 'http://127.0.0.1:4523/m1/4444180-4090006-default/book/do_book',
+        method: 'post',
+        // url: 'http://127.0.0.1:4523/m1/4444180-4090006-default/book/do_book',
+        url: '/api/book/do_book',
         headers: {
             'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
             'Content-Type': 'application/json'

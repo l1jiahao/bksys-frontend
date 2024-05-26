@@ -38,7 +38,7 @@
           </a-col>
         </a-space>
       </a-row>
-      <a-modal
+      <!-- <a-modal
         v-model="modalVisible"
         title="请选择预约时间段"
         centered
@@ -50,7 +50,7 @@
           <p>结束时间</p>
           <a-time-picker format="HH:mm" :minute-step="30" :value="bookEndTime" @change="onBookEndChange" />
         </a-space>
-      </a-modal>
+      </a-modal> -->
     </a-card>
   </page-header-wrapper>
 </template>
@@ -92,7 +92,6 @@ export default {
     this.cols = Number(this.$route.query.col_count) || 0
     this.rows = Number(this.$route.query.row_count) || 0
     this.roomName = this.$route.query.room_name
-    console.log(this.rows, this.cols)
     window.addEventListener('resize', this.updateWindowWidth)
   },
   destroyed () {
@@ -123,8 +122,8 @@ export default {
     async handleQuery () {
       var data = JSON.stringify({
         'room_id': this.roomID,
-        'start_time': this.getHourMinute(this.startTime),
-        'end_time': this.getHourMinute(this.endTime)
+        'start_time': this.startTime.format('YYYY-MM-DD HH:mm:ss'),
+        'end_time': this.endTime.format('YYYY-MM-DD HH:mm:ss')
       })
       const res = await avaliDesk(data).then(res => res.data.message.data)
       this.avaliDesks = res
@@ -144,11 +143,11 @@ export default {
     getBonusTag (row, col) {
       const bonusId = this.getDesk(row, col).bonus_id
       switch (bonusId) {
-        case 0:
-          return 'green'
         case 1:
-          return 'red'
+          return 'green'
         case 2:
+          return 'blue'
+        case 4:
           return 'yellow'
         default:
           return ''
@@ -157,36 +156,43 @@ export default {
     getBonusContent (row, col) {
       const bonusId = this.getDesk(row, col).bonus_id
       switch (bonusId) {
-        case 0:
-          return '电源'
         case 1:
-          return '故障'
+          return '电源'
         case 2:
           return '靠窗'
+        case 3:
+          return '普通'
+        case 4:
+          return '电源&靠窗'
         default:
           return ''
       }
     },
     doBooking (row, col) {
-      this.modalVisible = true
+      // this.modalVisible = true
       this.selectCol = col
       this.selectRow = row
+      this.handelBooking(row, col)
     },
-    async handelBooking () {
+    async handelBooking (row, col) {
       // 根据 row col 从 avaliDesk 中找到对应的 desk_id
-      const selectDesk = this.getDesk(this.selectRow, this.selectCol)
+      const selectDesk = this.getDesk(row, col)
       const param = JSON.stringify({
-        'user_id': '1', // TODO: 从 store 中获取
+        'user_id': '4', // TODO: 从 store 中获取
         'seat_id': selectDesk.seat_id,
-        'start_time': this.getHourMinute(this.bookStartTime),
-        'end_time': this.getHourMinute(this.bookEndTime)
+        'start_time': this.startTime.format('YYYY-MM-DD HH:mm:ss'),
+        'end_time': this.endTime.format('YYYY-MM-DD HH:mm:ss')
       })
       const res = await bookDesk(param).then(res => {
         return res.data
+      }).catch(err => {
+        console.log(err)
+        this.$message.error('预约失败, 请检查网络')
       })
+
       if (res.code === 1) {
         this.$message.success('预约成功')
-        this.modalVisible = false
+        this.handleQuery()
       } else {
         this.$message.error(res.message.content)
       }
