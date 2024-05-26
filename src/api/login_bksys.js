@@ -27,3 +27,16 @@ export function register (parameter) {
    }
    return axios(config)
 }
+
+export function getUserInfo (parameter) {
+   var config = {
+      method: 'get',
+      url: `/api/user/users/${parameter}`,
+      // url: 'http://127.0.0.1:4523/m1/4444180-4090006-default/user/login',
+      headers: {
+         'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+         'Content-Type': 'application/json'
+      }
+   }
+   return axios(config)
+}

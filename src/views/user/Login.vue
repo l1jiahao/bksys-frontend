@@ -120,6 +120,7 @@ import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
 import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
 import { getSmsCaptcha, get2step } from '@/api/login'
+// import { getUserInfo} from '@/api/login_bksys'
 
 export default {
   components: {
@@ -307,6 +308,7 @@ export default {
         })
       })
       */
+
       this.$router.push({ path: '/' })
       // 延迟 1 秒显示欢迎信息
       setTimeout(() => {
