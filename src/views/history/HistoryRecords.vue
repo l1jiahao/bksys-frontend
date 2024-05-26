@@ -80,13 +80,13 @@ const columns = [
     },
     {
         title: '开始时间',
-        dataIndex: 'start_time',
+        dataIndex: 'startTime',
         key: 'start_time',
         scopedSlots: { customRender: 'start_time' }
     },
     {
         title: '结束时间',
-        dataIndex: 'end_time',
+        dataIndex: 'endTime',
         key: 'end_time',
         scopedSlots: { customRender: 'end_time' }
     },
@@ -142,7 +142,7 @@ export default {
     },
     created () {
         // this.user_id = localStorage.getItem('user_id')
-        this.user_id = 15000019981218856
+        this.user_id = 4
         this.handleFindRecord()
     },
     methods: {
