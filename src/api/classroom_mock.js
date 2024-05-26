@@ -58,3 +58,31 @@ export function bookDesk (params) {
 
     return axios(config)
 }
+
+export function addAddress (params) {
+    // 可用
+    var config = {
+        method: 'post',
+        // url: 'http://127.0.0.1:4523/m1/4444180-4090006-default/address/findall',
+        url: '/api/address/add',
+        headers: {
+            'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
+        },
+        data: params
+    }
+    return axios(config)
+}
+
+export function addClassroom (params) {
+    // 可用
+    var config = {
+        method: 'post',
+        // url: 'http://127.0.0.1:4523/m1/4444180-4090006-default/address/findall',
+        url: '/api/classroom/create',
+        headers: {
+            'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
+        },
+        data: params
+    }
+    return axios(config)
+}
