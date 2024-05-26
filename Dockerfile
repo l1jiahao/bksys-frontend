@@ -1,6 +1,11 @@
-FROM nginx
+FROM node:20.13.1 as build-stage
+WORKDIR /app
+COPY package*.json ./
+RUN yarn install
+COPY ./ .
+RUN yarn build
 
-RUN rm /etc/nginx/conf.d/default.conf
-
-ADD deploy/nginx.conf /etc/nginx/conf.d/default.conf
-COPY dist/ /usr/share/nginx/html/
+FROM nginx as production-stage
+RUN mkdir /app
+COPY --from=build-stage /app/dist /app
+COPY nginx.conf /etc/nginx/nginx.conf

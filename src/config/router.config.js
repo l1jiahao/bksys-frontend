@@ -44,32 +44,32 @@ export const asyncRouterMap = [
       //   ]
       // },
       // forms
-      {
-        path: '/form',
-        redirect: '/form/base-form',
-        component: RouteView,
-        meta: { title: 'menu.form', icon: 'form', permission: ['form'] },
-        children: [
-          {
-            path: '/form/base-form',
-            name: 'BaseForm',
-            component: () => import('@/views/form/basicForm'),
-            meta: { title: 'menu.form.basic-form', keepAlive: true, permission: ['form'] }
-          },
-          {
-            path: '/form/step-form',
-            name: 'StepForm',
-            component: () => import('@/views/form/stepForm/StepForm'),
-            meta: { title: 'menu.form.step-form', keepAlive: true, permission: ['form'] }
-          },
-          {
-            path: '/form/advanced-form',
-            name: 'AdvanceForm',
-            component: () => import('@/views/form/advancedForm/AdvancedForm'),
-            meta: { title: 'menu.form.advanced-form', keepAlive: true, permission: ['form'] }
-          }
-        ]
-      },
+      // {
+      //   path: '/form',
+      //   redirect: '/form/base-form',
+      //   component: RouteView,
+      //   meta: { title: 'menu.form', icon: 'form', permission: ['form'] },
+      //   children: [
+      //     {
+      //       path: '/form/base-form',
+      //       name: 'BaseForm',
+      //       component: () => import('@/views/form/basicForm'),
+      //       meta: { title: 'menu.form.basic-form', keepAlive: true, permission: ['form'] }
+      //     },
+      //     {
+      //       path: '/form/step-form',
+      //       name: 'StepForm',
+      //       component: () => import('@/views/form/stepForm/StepForm'),
+      //       meta: { title: 'menu.form.step-form', keepAlive: true, permission: ['form'] }
+      //     },
+      //     {
+      //       path: '/form/advanced-form',
+      //       name: 'AdvanceForm',
+      //       component: () => import('@/views/form/advancedForm/AdvancedForm'),
+      //       meta: { title: 'menu.form.advanced-form', keepAlive: true, permission: ['form'] }
+      //     }
+      //   ]
+      // },
       // // list
       // {
       //   path: '/list',
