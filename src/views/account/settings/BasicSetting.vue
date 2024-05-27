@@ -64,11 +64,11 @@ export default {
   },
   created () {
     // this.user_id = localStorage.getItem('user_id')
-    this.token = 'gsidgwqk'
-    this.account = 'test'
-    this.email = 'sudhw@sjd.com'
-    this.name = 'wang'
-    this.password = 'test'
+    this.token = '2BMf6n^j7e[A(ppkB^fq(0o$O)PGc!'
+    this.account = '&muxD2EE'
+    this.email = 'e.fsxupj@eihqnedo.ht'
+    this.name = '孙伟'
+    this.password = '#vVFi]JWB8'
   },
   methods: {
     async handleSubmit (e) {
