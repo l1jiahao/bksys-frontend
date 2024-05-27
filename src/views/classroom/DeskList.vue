@@ -58,6 +58,7 @@
 <script>
 // import moment from 'moment'
 import { avaliDesk, bookDesk } from '@/api/classroom_mock'
+import storage from 'store'
 export default {
   name: 'TestTable',
   data () {
@@ -178,7 +179,7 @@ export default {
       // 根据 row col 从 avaliDesk 中找到对应的 desk_id
       const selectDesk = this.getDesk(row, col)
       const param = JSON.stringify({
-        'user_id': '4', // TODO: 从 store 中获取
+        'user_id': storage.get('user_id'), // TODO: 从 store 中获取
         'seat_id': selectDesk.seat_id,
         'start_time': this.startTime.format('YYYY-MM-DD HH:mm:ss'),
         'end_time': this.endTime.format('YYYY-MM-DD HH:mm:ss')

@@ -58,9 +58,13 @@ const user = {
           if (result.code !== 1) {
             reject(new Error(0))
           } else {
-          storage.set(ACCESS_TOKEN, result.message.token, new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
+          storage.set(ACCESS_TOKEN, result.message.user_id, new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
+
+          console.log('login success')
+          console.log(result.message)
           storage.set('username', result.message.name)
-          commit('SET_TOKEN', result.message.token)
+          storage.set('user_id', result.message.user_id)
+          commit('SET_TOKEN', result.message.user_id)
           resolve()
           }
         }).catch(error => {

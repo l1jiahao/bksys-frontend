@@ -4,8 +4,8 @@
       <div class="page-header-content">
         <div class="content">
           <div class="content-title">
-            {{ "Hello," }} {{ username }}
-            <span class="welcome-text">，{{ '来一次酣畅淋漓的自习吧!' }}</span>
+            {{ timeFixInfo }}, {{ username }}
+            <span class="welcome-text">,{{ '来一次酣畅淋漓的自习吧!' }}</span>
           </div>
           <div> 计算机学院 | 2019 级</div>
         </div>
@@ -56,30 +56,48 @@ import { STable, Ellipsis } from '@/components'
 import { findRecord, checkIn } from '@/api/history_mock'
 import CreateForm from './modules/CreateForm'
 import storage from 'store'
+import { timeFix } from '@/utils/util'
 
 const columns = [
-    {
-        title: '座位ID',
-        dataIndex: 'seat_id',
-        key: 'seat_id',
-        scopedSlots: { customRender: 'seat_id' }
-    },
+    // {
+    //     title: '座位ID',
+    //     dataIndex: 'seat_id',
+    //     key: 'seat_id',
+    //     scopedSlots: { customRender: 'seat_id' }
+    // },
     {
         title: '状态',
         dataIndex: 'status_id',
         scopedSlots: { customRender: 'status_id' }
     },
     {
+        title: '日期',
+        dataIndex: 'date',
+        key: 'date',
+        scopedSlots: { customRender: 'date' },
+        sorter: (a, b) => a.date.localeCompare(b.date)
+    },
+    {
         title: '开始时间',
         dataIndex: 'startTime',
         key: 'start_time',
-        scopedSlots: { customRender: 'start_time' }
+        scopedSlots: { customRender: 'start_time' },
+        sorter: (a, b) => {
+        const [hourA, minuteA] = a.startTime.split(':').map(Number)
+        const [hourB, minuteB] = b.startTime.split(':').map(Number)
+        return hourA * 60 + minuteA - (hourB * 60 + minuteB)
+      }
     },
     {
         title: '结束时间',
         dataIndex: 'endTime',
         key: 'end_time',
-        scopedSlots: { customRender: 'end_time' }
+        scopedSlots: { customRender: 'end_time' },
+        sorter: (a, b) => {
+        const [hourA, minuteA] = a.endTime.split(':').map(Number)
+        const [hourB, minuteB] = b.endTime.split(':').map(Number)
+        return hourA * 60 + minuteA - (hourB * 60 + minuteB)
+      }
     },
     {
         title: '操作',
@@ -114,8 +132,13 @@ export default {
     },
     created () {
         // this.user_id = localStorage.getItem('user_id')
-        this.user_id = 4
+        this.user_id = storage.get('user_id')
         this.handleFindRecord()
+    },
+    computed: {
+      timeFixInfo () {
+        return timeFix()
+      }
     },
     methods: {
         async handleFindRecord () {
@@ -127,12 +150,21 @@ export default {
               4: '已取消'
             }
             try {
-                const res = await findRecord(requestParameters).then(res => res.data.message.data)
-                this.records = res.map(item => ({
+              const res = await findRecord(requestParameters).then(res => res.data.message.data)
+              this.records = res.map(item => {
+                const [date, startTime] = item.startTime.split('T')
+                const [startTimeHour, startTimeMinute] = startTime.split(':')
+                const [, endTime] = item.endTime.split('T')
+                const [endTimeHour, endTimeMinute] = endTime.split(':')
+                return {
                   ...item,
+                  date,
+                  startTime: `${startTimeHour}:${startTimeMinute}`,
+                  endTime: `${endTimeHour}:${endTimeMinute}`,
                   status_id: statusMap[item.status_id]
-                }))
-                console.log(this.records)
+                }
+              })
+                // console.log(this.records)
             } catch (error) {
                 console.error('Error fetching records:', error)
             }
