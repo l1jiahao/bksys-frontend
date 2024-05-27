@@ -134,7 +134,7 @@ const vueConfig = {
     // }
     proxy: {
       '/api': {
-        target: 'http://localhost:6666',
+        target: 'http://nogra.cn:6666',
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''
