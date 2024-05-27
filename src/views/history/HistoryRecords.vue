@@ -28,6 +28,9 @@
 
     <a-card :bordered="false">
       <a-table :columns="columns" :data-source="records" :pagination="{ pageSize: 10 }" >
+        <a-tag slot="status_id" slot-scope="tags" :color="tags === '未签到' ? 'green' : tags === '违约' ? 'red' : 'gray'">
+          {{ tags }}
+        </a-tag>
         <span slot="action" slot-scope="text, record">
           <template>
             <a @click="handleCheckIn(record)">签到</a>
@@ -56,12 +59,6 @@ import storage from 'store'
 
 const columns = [
     {
-        title: '记录ID',
-        dataIndex: 'record_id',
-        key: 'record_id',
-        scopedSlots: { customRender: 'record_id' }
-    },
-    {
         title: '座位ID',
         dataIndex: 'seat_id',
         key: 'seat_id',
@@ -71,12 +68,6 @@ const columns = [
         title: '状态',
         dataIndex: 'status_id',
         scopedSlots: { customRender: 'status_id' }
-    },
-    {
-        title: '用户ID',
-        dataIndex: 'user_id',
-        key: 'user_id',
-        scopedSlots: { customRender: 'user_id' }
     },
     {
         title: '开始时间',
@@ -98,27 +89,8 @@ const columns = [
     }
 ]
 
-// TODO: 状态的不同展示；只有待签到记录可以点击签到；user_id的逻辑调整；
+// TODO: 只有待签到记录可以点击签到；user_id的逻辑调整；
 // TODO LATER: 取消预约（通过12）；根据状态不同显示“签到或取消”以及“再次预约”（通过11）
-
-/* const statusMap = {
-  0: {
-    status: 'default',
-    text: '关闭'
-  },
-  1: {
-    status: 'processing',
-    text: '运行中'
-  },
-  2: {
-    status: 'success',
-    text: '已上线'
-  },
-  3: {
-    status: 'error',
-    text: '异常'
-  }
-} */
 
 export default {
     name: 'TableList',
@@ -148,9 +120,18 @@ export default {
     methods: {
         async handleFindRecord () {
             const requestParameters = { user_id: this.user_id }
+            const statusMap = {
+              1: '未签到',
+              2: '已签到',
+              3: '违约',
+              4: '已取消'
+            }
             try {
-                const res = await findRecord(requestParameters)
-                this.records = res.data.message.data
+                const res = await findRecord(requestParameters).then(res => res.data.message.data)
+                this.records = res.map(item => ({
+                  ...item,
+                  status_id: statusMap[item.status_id]
+                }))
                 console.log(this.records)
             } catch (error) {
                 console.error('Error fetching records:', error)
@@ -184,7 +165,8 @@ export default {
                 form.resetFields()
                 if (res === true) {
                   this.$message.info('签到成功！')
-                  // TODO, refresh the table here
+                  // refresh the table here
+                  this.handleFindRecord()
                 } else {
                   this.$message.info('签到失败！')
                 }
