@@ -63,7 +63,11 @@ const user = {
           console.log('login success')
           console.log(result.message)
           storage.set('username', result.message.name)
+          storage.set('account', result.message.account)
+          storage.set('password', result.message.password)
+          storage.set('email', result.message.email)
           storage.set('user_id', result.message.user_id)
+          storage.set('role_id', result.message.role_id)
           commit('SET_TOKEN', result.message.user_id)
           resolve()
           }

@@ -4,16 +4,17 @@
       <a-col :md="24" :lg="16">
 
         <a-form layout="vertical" @submit="handleSubmit" :form="form">
-          <a-form-item :label="$t('account.settings.basic.nickname')" >
+          <a-form-item label="Name" >
             <a-input
               v-decorator="['newname', { rules: [{ required: true, message: 'Please input your name!' }] }]"
+              :placeholder="name"
             />
           </a-form-item>
 
           <a-form-item :label="$t('account.settings.basic.email')" >
             <a-input
               v-decorator="['newemail', { rules: [{ required: true, message: 'Please input your email!' }] }]"
-              placeholder="example@ant.design"
+              :placeholder="email"
             />
           </a-form-item>
 
@@ -30,6 +31,7 @@
 <script>
 import { baseMixin } from '@/store/app-mixin'
 import { editInfo } from '@/api/account_mock'
+import storage from 'store'
 
 export default {
   mixins: [baseMixin],
@@ -63,31 +65,36 @@ export default {
     }
   },
   created () {
-    // this.user_id = localStorage.getItem('user_id')
     this.token = '2BMf6n^j7e[A(ppkB^fq(0o$O)PGc!'
-    this.account = '&muxD2EE'
-    this.email = 'e.fsxupj@eihqnedo.ht'
-    this.name = '孙伟'
-    this.password = '#vVFi]JWB8'
+    this.account = storage.get('account')
+    this.email = storage.get('email')
+    this.name = storage.get('username')
+    this.password = storage.get('password')
+    this.role_id = storage.get('role_id')
+    this.user_id = storage.get('user_id')
   },
   methods: {
     async handleSubmit (e) {
       e.preventDefault()
       this.form.validateFields(async (err, values) => {
         if (!err) {
-          console.log('Received values of form: ', values)
           const requestParameters = {
             token: this.token,
             name: values.newname,
             account: this.account,
             password: this.password,
-            email: values.newemail
+            email: values.newemail,
+            user_id: this.user_id,
+            role_id: this.role_id
           }
           try {
               const res = await editInfo(requestParameters)
-              const result = res.data.message.content
-              console.log(result)
-              if (result === '修改成功') {
+              const result = res.data
+              if (result.code === 1) {
+                this.email = values.newemail
+                this.name = values.newname
+                storage.set('username', values.newname)
+                storage.set('email', values.newemail)
                 this.form.resetFields()
                 this.$message.info('修改成功！')
               } else {

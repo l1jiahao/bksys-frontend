@@ -88,3 +88,17 @@ export function addClassroom (params) {
     }
     return axios(config)
 }
+
+export function getCaptcha (params) {
+    // 可用
+    var config = {
+        method: 'post',
+        // url: 'http://127.0.0.1:4523/m1/4444180-4090006-default/classroom/captcha',
+        url: '/api/classroom/captcha',
+        headers: {
+            'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
+        },
+        data: params
+    }
+    return axios(config)
+}

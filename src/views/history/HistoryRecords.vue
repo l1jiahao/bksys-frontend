@@ -53,7 +53,7 @@
 
 <script>
 import { STable, Ellipsis } from '@/components'
-import { findRecord, checkIn } from '@/api/history_mock'
+import { findRecord, checkIn, cancelCheckIn } from '@/api/history_mock'
 import CreateForm from './modules/CreateForm'
 import storage from 'store'
 import { timeFix } from '@/utils/util'
@@ -68,7 +68,14 @@ const columns = [
     {
         title: '状态',
         dataIndex: 'status_id',
-        scopedSlots: { customRender: 'status_id' }
+        scopedSlots: { customRender: 'status_id' },
+        filters: [
+            { text: '未签到', value: '未签到' },
+            { text: '已签到', value: '已签到' },
+            { text: '违约', value: '违约' },
+            { text: '已取消', value: '已取消' }
+        ],
+        onFilter: (value, record) => record.status_id.indexOf(value) === 0
     },
     {
         title: '日期',
@@ -187,6 +194,7 @@ export default {
               console.log('values', values)
               new Promise((resolve, reject) => {
                 this.handleValidation(this.mdl.record_id, values.check_code).then(result => {
+                  console.log(result)
                   resolve(result)
                 }).catch(error => {
                   reject(error)
@@ -200,7 +208,7 @@ export default {
                   // refresh the table here
                   this.handleFindRecord()
                 } else {
-                  this.$message.info('签到失败！')
+                  this.$message.warning('签到失败！')
                 }
               }).catch(error => {
                 this.confirmLoading = false
@@ -224,6 +232,26 @@ export default {
             } catch (error) {
                 console.error('Error fetching records:', error)
             }
+        },
+        handleCancelRe (record) {
+          const params = {
+            record_id: record.record_id,
+            status_id: 4
+          }
+          cancelCheckIn(params).then(res => {
+            if (res.data.code === 1) {
+              this.$message.success('取消预约成功')
+              this.handleFindRecord()
+            } else {
+              this.$message.error('取消预约失败')
+            }
+            this.handleFindRecord()
+          }).catch(err => {
+            console.log(err)
+            this.$message.error('取消预约失败, 请检查网络')
+          })
+
+          console.log(record)
         }
     }
 }

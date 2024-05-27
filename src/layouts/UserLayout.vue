@@ -9,8 +9,8 @@
         <div class="top">
           <div class="header">
             <a href="/">
-              <img src="~@/assets/logo.svg" class="logo" alt="logo">
-              <span class="title">Ant Design</span>
+              <img src="~@/assets/fudan_logo.svg" class="logo" alt="logo">
+              <span class="title">自习室管理系统</span>
             </a>
           </div>
           <div class="desc">

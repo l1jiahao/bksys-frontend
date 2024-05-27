@@ -2,9 +2,12 @@
   <page-header-wrapper>
     <a-card
       :bordered="false"
-      :title="displayName"
       :headStyle="{ 'text-align': 'center' }"
       :style="{ overflow: 'auto', width: cols * 250, height: '800px' }">
+      <template slot="title">
+        {{ displayName }}
+        <span v-if="showCaptcha" style="color: red;">签到码: {{ captcha }}</span>
+      </template>
       <!-- <img
         slot="cover"
         alt="example"
@@ -57,13 +60,14 @@
 
 <script>
 // import moment from 'moment'
-import { avaliDesk, bookDesk } from '@/api/classroom_mock'
+import { avaliDesk, bookDesk, getCaptcha } from '@/api/classroom_mock'
 import storage from 'store'
 export default {
   name: 'TestTable',
   data () {
     return {
       windowWidth: window.innerWidth,
+      captcha: '',
       roomID: '',
       roomName: '',
       startTime: null,
@@ -73,7 +77,8 @@ export default {
       avaliDesks: [],
       modalVisible: false,
       selectCol: 0,
-      selectRow: 0
+      selectRow: 0,
+      role_id: storage.get('role_id')
 
     }
   },
@@ -86,9 +91,16 @@ export default {
     },
     isButtonDisabled () {
       return !(this.startTime && this.endTime)
+    },
+    showCaptcha () {
+      return this.role_id !== 1
+    },
+    cardTitle () {
+      return this.showCaptcha ? this.displayName + ' <span style="color: red;">签到码</span>' : this.displayName
     }
   },
   created () {
+    this.handleCaptcha()
     this.roomID = this.$route.query.room_id
     this.cols = Number(this.$route.query.col_count) || 0
     this.rows = Number(this.$route.query.row_count) || 0
@@ -196,6 +208,17 @@ export default {
         this.handleQuery()
       } else {
         this.$message.error(res.message.content)
+      }
+    },
+    async handleCaptcha () {
+      const res = await getCaptcha().then(res => res.data).catch(err => {
+        console.log(err)
+        this.$message.error('获取验证码失败, 请检查网络')
+      })
+      if (res.code === 1) {
+        this.captcha = res.message.check_code
+      } else {
+        this.$message.error('获取验证码失败')
       }
     }
   }

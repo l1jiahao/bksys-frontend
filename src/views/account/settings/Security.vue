@@ -32,6 +32,7 @@
 <script>
 import CreateForm from '../modules/CreateForm'
 import { editInfo } from '@/api/account_mock'
+import storage from 'store'
 
 export default {
   components: {
@@ -58,10 +59,11 @@ export default {
   },
   created () {
     this.token = '2BMf6n^j7e[A(ppkB^fq(0o$O)PGc!'
-    this.account = '&muxD2EE'
-    this.email = 'e.fsxupj@eihqnedo.ht'
-    this.name = '孙伟'
-    this.password = '#vVFi]JWB8'
+    this.account = storage.get('account')
+    this.email = storage.get('email')
+    this.name = storage.get('username')
+    this.role_id = storage.get('role_id')
+    this.user_id = storage.get('user_id')
   },
   methods: {
     handleModify () {
@@ -72,7 +74,7 @@ export default {
       this.confirmLoading = true
       form.validateFields((errors, values) => {
         if (!errors) {
-          console.log('values', values)
+          // console.log('values', values)
           new Promise((resolve, reject) => {
             this.handleValidation(values.newpass).then(result => {
               resolve(result)
@@ -102,16 +104,18 @@ export default {
     async handleValidation (pass) {
       const requestParameters = {
             token: this.token,
-            name: this.newname,
+            name: this.name,
             account: this.account,
             password: pass,
-            email: this.newemail
+            email: this.email,
+            user_id: this.user_id,
+            role_id: this.role_id
           }
       try {
           const res = await editInfo(requestParameters)
-          const result = res.data.message.content
+          const result = res.data
           console.log(result)
-          if (result === '修改成功') return true
+          if (result.code === 1) return true
           else return false
         } catch (error) {
             console.error('Error fetching records:', error)
