@@ -42,3 +42,17 @@ export function cancelCheckIn (params) {
     }
     return axios(config)
 }
+
+export function recordAddress (params) {
+    var config = {
+        method: 'post',
+        // url: 'http://127.0.0.1:4523/m1/4444180-4090006-default/book/alter_status',
+        url: '/api/book/record_address',
+        headers: {
+            'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+            'Content-Type': 'application/json'
+        },
+        data: params
+    }
+    return axios(config)
+}

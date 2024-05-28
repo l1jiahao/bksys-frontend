@@ -179,7 +179,7 @@ export default {
         handleCheckIn (record) {
             this.visible = true
             this.mdl = { ...record }
-            console.log(record)
+            // console.log(record)
         },
         handleCancel () {
             this.visible = false
@@ -224,11 +224,14 @@ export default {
         async handleValidation (id, code) {
           const requestParameters = { record_id: id, check_code: code }
           try {
+                console.log(requestParameters)
                 const res = await checkIn(requestParameters)
-                const vali = res.data.message.content
-                console.log(vali)
-                if (vali === '签到成功') return true
-                else return false
+                const result = res.data
+                console.log(result)
+                if (result.code === 1) {
+                  this.handleFindRecord()
+                  return true
+                } else return false
             } catch (error) {
                 console.error('Error fetching records:', error)
             }
@@ -245,7 +248,6 @@ export default {
             } else {
               this.$message.error('取消预约失败')
             }
-            this.handleFindRecord()
           }).catch(err => {
             console.log(err)
             this.$message.error('取消预约失败, 请检查网络')

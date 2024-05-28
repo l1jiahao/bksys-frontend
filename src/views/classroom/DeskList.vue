@@ -78,7 +78,8 @@ export default {
       modalVisible: false,
       selectCol: 0,
       selectRow: 0,
-      role_id: storage.get('role_id')
+      role_id: storage.get('role_id'),
+      showCaptcha: false
 
     }
   },
@@ -92,19 +93,17 @@ export default {
     isButtonDisabled () {
       return !(this.startTime && this.endTime)
     },
-    showCaptcha () {
-      return this.role_id !== 1
-    },
     cardTitle () {
       return this.showCaptcha ? this.displayName + ' <span style="color: red;">签到码</span>' : this.displayName
     }
   },
   created () {
-    this.handleCaptcha()
     this.roomID = this.$route.query.room_id
+    this.handleCaptcha()
     this.cols = Number(this.$route.query.col_count) || 0
     this.rows = Number(this.$route.query.row_count) || 0
     this.roomName = this.$route.query.room_name
+    this.showCaptcha = this.role_id !== '1'
     window.addEventListener('resize', this.updateWindowWidth)
   },
   destroyed () {
@@ -211,15 +210,22 @@ export default {
       }
     },
     async handleCaptcha () {
-      const res = await getCaptcha().then(res => res.data).catch(err => {
-        console.log(err)
-        this.$message.error('获取验证码失败, 请检查网络')
+      const params = JSON.stringify({
+        'room_id': Number(this.roomID)
       })
-      if (res.code === 1) {
-        this.captcha = res.message.check_code
-      } else {
-        this.$message.error('获取验证码失败')
+      await getCaptcha(params).then(res => {
+        const result = res.data
+        console.log(result)
+        if (result.code === 1) {
+          this.captcha = result.message.check_code
+        } else {
+          this.$message.error('获取验证码失败')
+        }
       }
+      ).catch(err => {
+        console.log(err)
+        // this.$message.error('获取验证码失败, 请检查网络')
+      })
     }
   }
 }

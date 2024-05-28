@@ -18,14 +18,6 @@ import { findAllAddress, findClassroom } from '@/api/classroom_mock'
 import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from './modules/CreateForm'
 
-const timeFilters = Array.from({ length: 24 }, (_, index) => {
-  const hour = index.toString().padStart(2, '0')
-  return {
-    text: `${hour}:00`,
-    value: hour
-  }
-})
-
 export default {
   name: 'TableList',
   components: {
@@ -93,10 +85,10 @@ export default {
           scopedSlots: {
             customRender: 'open_time'
           },
-          filters: timeFilters,
-          onFilter: (value, record) => {
-            const recordHour = parseInt(record.close_time.split(':')[0])
-            return recordHour >= parseInt(value)
+          sorter: (a, b) => {
+            const [hourA, minuteA] = a.open_time.split(':').map(Number)
+            const [hourB, minuteB] = b.open_time.split(':').map(Number)
+            return hourA * 60 + minuteA - (hourB * 60 + minuteB)
           }
         },
         {
@@ -106,10 +98,10 @@ export default {
           scopedSlots: {
             customRender: 'close_time'
           },
-          filters: timeFilters,
-          onFilter: (value, record) => {
-            const recordHour = parseInt(record.close_time.split(':')[0])
-            return recordHour <= parseInt(value)
+          sorter: (a, b) => {
+            const [hourA, minuteA] = a.close_time.split(':').map(Number)
+            const [hourB, minuteB] = b.close_time.split(':').map(Number)
+            return hourA * 60 + minuteA - (hourB * 60 + minuteB)
           }
         },
         {
