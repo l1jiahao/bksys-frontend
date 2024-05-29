@@ -1,23 +1,22 @@
-version: '3'
+version: '3.8'
+
 services:
   backend:
-    image: bksys-backend
+    image: argoncs12/bksys-backend
     container_name: backend
-    # ports:
-    #   - "6666:6666"
-    networks:
-      - app-network
+    ports:
+      - "6666:6666"
+    restart: always
 
   frontend:
-    image: bksys-frontend
+    image: argoncs12/bksys-frontend
     container_name: frontend
     ports:
-      - "8000:80"
-    networks:
-      - app-network
+      - "80:80"
+    restart: always
     depends_on:
       - backend
 
 networks:
-  app-network:
+  default:
     driver: bridge
