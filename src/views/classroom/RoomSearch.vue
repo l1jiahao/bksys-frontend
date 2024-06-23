@@ -6,17 +6,39 @@
         <a slot="room_name" slot-scope="text, record" @click="goToRoom(record)">{{ text }}</a>
         <a-tag slot="status" slot-scope="tags" :color="tags === '开放' ? 'green' : tags === '故障' ? 'red' : 'blue'">
           {{ tags }}
-        </a-tag></a-table>
+        </a-tag>
+        <span slot="action" slot-scope="record" @click="handleAlterTime(record)">
+          <a>开放时间</a>
+        </span>
+      </a-table>
+      <a-modal v-model="visible" title="Basic Modal" @ok="handleOk">
+
+        <span> 开放时间 </span>
+        <a-time-picker format="HH" :value="startValue" @change="onStartChange">
+          <a-button slot="addon" size="small" type="primary">
+            Ok
+          </a-button>
+        </a-time-picker>
+
+        <span> 关闭时间 </span>
+        <a-time-picker format="HH" :value="endValue" @change="onEndChange">
+          <a-button slot="addon" size="small" type="primary">
+            Ok
+          </a-button>
+        </a-time-picker>
+
+      </a-modal>
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
 import { STable, Ellipsis } from '@/components'
-import { findAllAddress, findClassroom } from '@/api/classroom_mock'
+import { findAllAddress, findClassroom, alterTime } from '@/api/classroom_mock'
 
 import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from './modules/CreateForm'
+import storage from 'store'
 
 export default {
   name: 'TableList',
@@ -41,15 +63,20 @@ export default {
       uniqueBuildings: [],
       uniqueStatus: [],
       openTime: null,
-      closeTime: null
+      closeTime: null,
+      roleId: null,
+      startValue: null,
+      endValue: null,
+      selectedRoomId: null
     }
   },
   created () {
     this.handleFindClassroom()
+    this.roleId = storage.get('role_id')
   },
   computed: {
     column () {
-      return [
+      const baseColumns = [
         {
           title: '教室名称',
           dataIndex: 'room_name',
@@ -118,13 +145,20 @@ export default {
           }
         }
       ]
+      if (this.roleId === '2') {
+        baseColumns.push({
+          title: '操作',
+          key: 'action',
+          scopedSlots: { customRender: 'action' }
+        })
+      }
+      return baseColumns
     }
   },
   methods: {
     async handelFindAll () {
       const res = await findAllAddress().then(res => res.data.message.data)
       this.location = res
-      console.log(this.location)
     },
     async handleFindClassroom () {
       const res = await findClassroom().then(res => res.data.message)
@@ -154,6 +188,33 @@ export default {
         path: path,
         query: query
       })
+    },
+    handleAlterTime (record) {
+      this.selectedRoomId = record.room_id
+      this.visible = true
+    },
+    handleOk () {
+      this.visible = false
+      const params = {
+        roomId: this.selectedRoomId,
+        openTime: this.startValue.format('HH') + ':00:00',
+        closeTime: this.endValue.format('HH') + ':00:00'
+      }
+      alterTime(params).then(res => {
+        if (res.data.code === 1) {
+          this.$message.success('修改成功')
+          this.handleFindClassroom()
+        } else {
+          this.$message.error('修改失败')
+        }
+      })
+      console.log(params)
+    },
+    onStartChange (value) {
+      this.startValue = value
+    },
+    onEndChange (value) {
+      this.endValue = value
     }
   }
 }

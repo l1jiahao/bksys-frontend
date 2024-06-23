@@ -103,3 +103,18 @@ export function getCaptcha (params) {
     }
     return axios(config)
 }
+
+export function alterTime (params) {
+    // 可用
+    var config = {
+        method: 'post',
+        // url: 'http://127.0.0.1:4523/m1/4444180-4090006-default/classroom/captcha',
+        url: '/api/classroom/alter_time',
+        headers: {
+            'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+            'Content-Type': 'application/json'
+        },
+        data: params
+    }
+    return axios(config)
+}
