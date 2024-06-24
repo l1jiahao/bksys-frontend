@@ -30,7 +30,7 @@
               <template #title :style="{ align: 'center' }">
                 <a-space>
                   <span>{{ i + '行' + j + '列' }}</span>
-                  <a-tag v-if="isDeskAvali(i, j)" :color="getBonusTag(i, j)"> {{ getBonusContent(i, j) }}</a-tag>
+                  <a-tag v-if="isDeskAvali(i, j)" :color="getBonusTag(i, j)" @click="onTagClick(i, j)"> {{ getBonusContent(i, j) }}</a-tag>
                 </a-space>
               </template>
               <a-button
@@ -41,32 +41,36 @@
           </a-col>
         </a-space>
       </a-row>
-      <!-- <a-modal
-        v-model="modalVisible"
-        title="请选择预约时间段"
-        centered
-        @ok="handelBooking()"
-      >
-        <a-space>
-          <p>开始时间</p>
-          <a-time-picker format="HH:mm" :minute-step="30" :value="bookStartTime" @change="onBookStartChange" />
-          <p>结束时间</p>
-          <a-time-picker format="HH:mm" :minute-step="30" :value="bookEndTime" @change="onBookEndChange" />
-        </a-space>
-      </a-modal> -->
+      <a-modal v-model="modalVisible" title="预约" @ok="handleModalOk">
+        <a-select default-value="3" style="width: 120px" @change="handleChange">
+          <a-select-option value="3">
+            普通
+          </a-select-option>
+          <a-select-option value="1">
+            电源
+          </a-select-option>
+          <a-select-option value="2">
+            靠窗
+          </a-select-option>
+          <a-select-option value="4">
+            电源靠窗
+          </a-select-option>
+        </a-select>
+      </a-modal>
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
 // import moment from 'moment'
-import { avaliDesk, bookDesk, getCaptcha } from '@/api/classroom_mock'
+import { avaliDesk, bookDesk, getCaptcha, alterDeskStatus } from '@/api/classroom_mock'
 import storage from 'store'
 export default {
   name: 'TestTable',
   data () {
     return {
       windowWidth: window.innerWidth,
+      deskStatus: 3,
       captcha: '',
       roomID: '',
       roomName: '',
@@ -110,6 +114,32 @@ export default {
     window.removeEventListener('resize', this.updateWindowWidth)
   },
   methods: {
+    openNotification () {
+      const key = `open${Date.now()}`
+      this.$notification.open({
+        message: '预约通知',
+        duration: 0,
+        description:
+          '在预约时间之前15分钟会有邮件推送提醒；在预约时间之后10分钟如果还未签到，则会再次提醒；预约时间15分钟后如果还未签到，则自动取消预约、释放座位，并再次提醒，同时后台记录一次违约。',
+        btn: h => {
+          return h(
+            'a-button',
+            {
+              props: {
+                type: 'primary',
+                size: 'small'
+              },
+              on: {
+                click: () => this.$notification.close(key)
+              }
+            },
+            'Confirm'
+          )
+        },
+        key,
+        onClose: close
+      })
+    },
     updateWindowWidth () {
       this.windowWidth = window.innerWidth
     },
@@ -181,7 +211,6 @@ export default {
       }
     },
     doBooking (row, col) {
-      // this.modalVisible = true
       this.selectCol = col
       this.selectRow = row
       this.handelBooking(row, col)
@@ -204,6 +233,7 @@ export default {
 
       if (res.code === 1) {
         this.$message.success('预约成功')
+        this.openNotification()
         this.handleQuery()
       } else {
         this.$message.error(res.message.content)
@@ -215,7 +245,7 @@ export default {
       })
       await getCaptcha(params).then(res => {
         const result = res.data
-        console.log(result)
+        // console.log(result)
         if (result.code === 1) {
           this.captcha = result.message.check_code
         } else {
@@ -226,6 +256,29 @@ export default {
         console.log(err)
         // this.$message.error('获取验证码失败, 请检查网络')
       })
+    },
+    onTagClick (row, col) {
+      this.selectCol = col
+      this.selectRow = row
+      this.modalVisible = true
+    },
+    handleModalOk () {
+      this.modalVisible = false
+      const params = {
+        seat_id: this.getDesk(this.selectRow, this.selectCol).seat_id,
+        bonus_id: this.deskStatus
+      }
+      alterDeskStatus(params).then(res => {
+        if (res.data.code === 1) {
+          this.$message.success('修改成功')
+          this.handleQuery()
+        } else {
+          this.$message.error('修改失败')
+        }
+      })
+    },
+    handleChange (value) {
+      this.deskStatus = value
     }
   }
 }

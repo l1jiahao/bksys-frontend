@@ -118,3 +118,31 @@ export function alterTime (params) {
     }
     return axios(config)
 }
+
+export function alterStatus (params) {
+    // 可用
+    var config = {
+        method: 'post',
+        url: '/api/classroom/alter_status',
+        headers: {
+            'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+            'Content-Type': 'application/json'
+        },
+        data: params
+    }
+    return axios(config)
+}
+
+export function alterDeskStatus (params) {
+    // 可用
+    var config = {
+        method: 'post',
+        url: '/api/seat/alter_bonus',
+        headers: {
+            'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+            'Content-Type': 'application/json'
+        },
+        data: params
+    }
+    return axios(config)
+}

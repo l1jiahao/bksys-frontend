@@ -1,8 +1,12 @@
 import Mock from 'mockjs2'
 import { builder } from '../util'
+import storage from 'store'
 
 const info = options => {
   console.log('options', options)
+  if (storage.get('role_id') === 2) {
+    console.log('管理员登录')
+  }
   const userInfo = {
     id: '4291d7da9005377ec9aec4a71ea837f',
     name: '天野远子',

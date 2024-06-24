@@ -9,22 +9,24 @@
           </div>
           <div> 计算机学院 | 2019 级</div>
         </div>
+        <div>
+          <a-row :gutter="12">
+            <a-col :span="8" class="stat-column">
+              <a-statistic title="预约次数" :value="numTotal" style="padding: 10px;">
+              </a-statistic>
+            </a-col>
+            <a-col :span="8" class="stat-column">
+              <a-statistic title="已签到" :value="numSignedIn" class="demo-class" style="padding: 10px;">
+              </a-statistic>
+            </a-col>
+            <a-col :span="8" class="stat-column">
+              <a-statistic title="未签到" :value="numNotSignedIn" class="demo-class" style="padding: 10px;">
+              </a-statistic>
+            </a-col>
+          </a-row>
+        </div>
       </div>
     </template>
-
-    <!-- <template v-slot:extraContent>
-      <div class="extra-content">
-        <div class="stat-item">
-          <a-statistic title="项目数" :value="56" />
-        </div>
-        <div class="stat-item">
-          <a-statistic title="团队内排名" :value="8" suffix="/ 24" />
-        </div>
-        <div class="stat-item">
-          <a-statistic title="项目访问" :value="2223" />
-        </div>
-      </div>
-    </template> -->
 
     <a-card :bordered="false">
       <a-table :columns="columns" :data-source="records" :pagination="{ pageSize: 10 }" >
@@ -36,6 +38,8 @@
             <a @click="handleCheckIn(record)">签到</a>
             <a-divider type="vertical" />
             <a @click="handleCancelRe(record)">取消预约</a>
+            <a-divider type="vertical" />
+            <a @click="handleBooking(record)">再次预约</a>
           </template>
         </span>
       </a-table>
@@ -47,24 +51,48 @@
         @cancel="handleCancel"
         @ok="handleOk"
       />
+
+      <a-modal
+        title="再次预约"
+        :width="640"
+        :visible="bookingVisible"
+        @ok="handleBookingOk"
+        @cancel="handleBookingCancel"
+      >
+        <div class="row">
+          <div class="cell">建筑名: {{ selectBuilding }}</div>
+          <div class="cell">楼层: {{ selectFloor }}</div>
+          <div class="cell">教室名: {{ selectRoom }}</div>
+        </div>
+        <div class="row">
+          <div class="cell">座位行: {{ selectRow }}</div>
+          <div class="cell">座位列: {{ selectCol }}</div>
+        </div>
+        <div class="row">
+          <a-date-picker :value="selectDate" @change="onDateChange">
+          </a-date-picker>
+          <span> 开放时间 </span>
+          <a-time-picker format="HH:mm" :minute-step="30" :value="selectStartTime" @change="onStartChange">
+          </a-time-picker>
+          <a-divider type="vertical" />
+          <span> 结束时间 </span>
+          <a-time-picker format="HH:mm" :minute-step="30" :value="selectEndTime" @change="onEndChange">
+          </a-time-picker>
+        </div>
+      </a-modal>
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
 import { STable, Ellipsis } from '@/components'
-import { findRecord, checkIn, cancelCheckIn } from '@/api/history_mock'
+import { findRecord, checkIn, cancelCheckIn, recordAddress } from '@/api/history_mock'
+import { bookDesk } from '@/api/classroom_mock'
 import CreateForm from './modules/CreateForm'
 import storage from 'store'
 import { timeFix } from '@/utils/util'
 
 const columns = [
-    // {
-    //     title: '座位ID',
-    //     dataIndex: 'seat_id',
-    //     key: 'seat_id',
-    //     scopedSlots: { customRender: 'seat_id' }
-    // },
     {
         title: '状态',
         dataIndex: 'status_id',
@@ -130,11 +158,21 @@ export default {
         return {
         // create model
         visible: false,
+        bookingVisible: false,
         confirmLoading: false,
         mdl: null,
         // 查询参数
         user_id: null,
-        records: []
+        records: [],
+        selectBuilding: null,
+        selectFloor: null,
+        selectRoom: null,
+        selectRow: null,
+        selectCol: null,
+        selectStartTime: null,
+        selectEndTime: null,
+        selectDate: null,
+        selectSeatId: null
         }
     },
     created () {
@@ -145,6 +183,15 @@ export default {
     computed: {
       timeFixInfo () {
         return timeFix()
+      },
+      numTotal () {
+        return this.records.length
+      },
+      numSignedIn () {
+        return this.records.filter(record => record.status_id === '已签到').length
+      },
+      numNotSignedIn () {
+        return this.records.filter(record => record.status_id === '未签到').length
       }
     },
     methods: {
@@ -156,6 +203,11 @@ export default {
               3: '违约',
               4: '已取消'
             }
+            const statistics = {
+              total: 0,
+              signedIn: 0,
+              notSignedIn: 0
+            }
             try {
               const res = await findRecord(requestParameters).then(res => res.data.message.data)
               this.records = res.map(item => {
@@ -163,6 +215,13 @@ export default {
                 const [startTimeHour, startTimeMinute] = startTime.split(':')
                 const [, endTime] = item.endTime.split('T')
                 const [endTimeHour, endTimeMinute] = endTime.split(':')
+                    // 更新统计数据
+                statistics.total++
+                if (item.status_id === 2) {
+                  statistics.signedIn++
+                } else if (item.status_id === 1) {
+                  statistics.notSignedIn++
+                }
                 return {
                   ...item,
                   date,
@@ -254,6 +313,62 @@ export default {
           })
 
           console.log(record)
+        },
+        handleBooking (record) {
+          this.bookingVisible = true
+          const params = {
+            record_id: record.record_id
+          }
+          this.selectSeatId = record.seat_id
+          recordAddress(params).then(res => {
+            const result = res.data
+            if (result.code === 1) {
+              this.selectBuilding = result.message.building
+              this.selectFloor = result.message.floor
+              this.selectRoom = result.message.room_name
+              this.selectRow = result.message.row_num
+              this.selectCol = result.message.col_num
+            } else {
+              this.$message.error(result.message)
+            }
+          }).catch(err => {
+            console.log(err)
+          })
+
+          console.log(record)
+        },
+        handleBookingOk () {
+          const params = {
+            user_id: this.user_id,
+            seat_id: this.selectSeatId,
+            start_time: this.selectStartTime.format('YYYY-MM-DD HH:mm:ss'),
+            end_time: this.selectEndTime.format('YYYY-MM-DD HH:mm:ss')
+          }
+          console.log(params)
+          bookDesk(params).then(res => {
+            if (res.data.code === 1) {
+              this.$message.success('再次预约成功')
+              this.handleFindRecord()
+            } else {
+              this.$message.error('预约失败')
+            }
+          }).catch(err => {
+            console.log(err)
+            this.$message.error('预约失败, 请检查网络')
+          })
+          this.bookingVisible = false
+        },
+        handleBookingCancel () {
+          this.bookingVisible = false
+        },
+        onStartChange (value) {
+          this.selectStartTime = value
+        },
+        onEndChange (value) {
+          this.selectEndTime = value
+        },
+        onDateChange (value) {
+          this.selectDate = value
         }
     }
 }
@@ -261,6 +376,22 @@ export default {
 
 <style lang="less" scoped>
 @import './Workplace.less';
+.stat-column {
+  min-width: 150px; /* 设置最小宽度 */
+  white-space: nowrap; /* 确保文本不换行 */
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.cell {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
 
 .project-list {
   .card-title {

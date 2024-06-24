@@ -60,8 +60,6 @@ const user = {
           } else {
           storage.set(ACCESS_TOKEN, result.message.user_id, new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
 
-          console.log('login success')
-          console.log(result.message)
           storage.set('username', result.message.name)
           storage.set('account', result.message.account)
           storage.set('password', result.message.password)
@@ -82,6 +80,7 @@ const user = {
         // 请求后端获取用户信息 /api/user/info
         getInfo().then(response => {
           const { result } = response
+          console.log('result', result)
           if (result.role && result.role.permissions.length > 0) {
             const role = { ...result.role }
             role.permissions = result.role.permissions.map(permission => {

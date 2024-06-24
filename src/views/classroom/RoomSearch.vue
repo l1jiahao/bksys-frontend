@@ -7,11 +7,13 @@
         <a-tag slot="status" slot-scope="tags" :color="tags === '开放' ? 'green' : tags === '故障' ? 'red' : 'blue'">
           {{ tags }}
         </a-tag>
-        <span slot="action" slot-scope="record" @click="handleAlterTime(record)">
-          <a>开放时间</a>
+        <span slot="action" slot-scope="record">
+          <a @click="handleAlterTime(record)">开放时间 </a>
+          <a-divider type="vertical" />
+          <a @click="handleStatus(record)"> 状态 </a>
         </span>
       </a-table>
-      <a-modal v-model="visible" title="Basic Modal" @ok="handleOk">
+      <a-modal v-model="visible" title="修改教室开放时间" @ok="handleOk">
 
         <span> 开放时间 </span>
         <a-time-picker format="HH" :value="startValue" @change="onStartChange">
@@ -19,7 +21,7 @@
             Ok
           </a-button>
         </a-time-picker>
-
+        <a-divider type="vertical" />
         <span> 关闭时间 </span>
         <a-time-picker format="HH" :value="endValue" @change="onEndChange">
           <a-button slot="addon" size="small" type="primary">
@@ -28,13 +30,26 @@
         </a-time-picker>
 
       </a-modal>
+      <a-modal v-model="statusVisible" title="修改教室开放状态" @ok="handleStatusOk">
+        <a-select default-value="1" style="width: 120px" @change="handleChange">
+          <a-select-option value="1">
+            开放
+          </a-select-option>
+          <a-select-option value="2">
+            关闭
+          </a-select-option>
+          <a-select-option value="3">
+            故障
+          </a-select-option>
+        </a-select>
+      </a-modal>
     </a-card>
   </page-header-wrapper>
 </template>
 
 <script>
 import { STable, Ellipsis } from '@/components'
-import { findAllAddress, findClassroom, alterTime } from '@/api/classroom_mock'
+import { findAllAddress, findClassroom, alterTime, alterStatus } from '@/api/classroom_mock'
 
 import StepByStepModal from './modules/StepByStepModal'
 import CreateForm from './modules/CreateForm'
@@ -52,6 +67,8 @@ export default {
     return {
       // create model
       visible: false,
+      statusVisible: false,
+      statusValue: 1,
       confirmLoading: false,
       mdl: null,
       // 高级搜索 展开/关闭
@@ -177,6 +194,15 @@ export default {
       this.uniqueStatus = [...new Set(this.classroom.map(item => item.status))]
     },
     goToRoom (record) {
+      console.log(record.status)
+      if (record.status === '关闭') {
+        this.$message.error('教室已关闭')
+        return
+      }
+      if (record.status === '故障') {
+        this.$message.error('教室故障, 暂停使用')
+        return
+      }
       const path = '/classroom/desk'
       const query = {
         room_id: record.room_id,
@@ -215,6 +241,29 @@ export default {
     },
     onEndChange (value) {
       this.endValue = value
+    },
+    handleStatus (record) {
+      this.selectedRoomId = record.room_id
+      this.statusVisible = true
+    },
+    handleStatusOk () {
+      this.statusVisible = false
+      const params = {
+        room_id: this.selectedRoomId,
+        status_id: this.statusValue
+      }
+      console.log(params)
+      alterStatus(params).then(res => {
+        if (res.data.code === 1) {
+          this.$message.success('修改成功')
+          this.handleFindClassroom()
+        } else {
+          this.$message.error('修改失败')
+        }
+      })
+    },
+    handleChange (value) {
+      this.statusValue = value
     }
   }
 }
