@@ -258,6 +258,9 @@ export default {
       })
     },
     onTagClick (row, col) {
+      if (this.role_id !== '2') {
+        return
+      }
       this.selectCol = col
       this.selectRow = row
       this.modalVisible = true

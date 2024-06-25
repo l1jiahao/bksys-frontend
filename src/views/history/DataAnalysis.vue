@@ -71,13 +71,6 @@ MiniSmoothArea
 import { baseMixin } from '@/store/app-mixin'
 import { getAllRecord, getAllClassroomRecord } from '@/api/data_analysis'
 
-const rankList = []
-for (let i = 0; i < 7; i++) {
-rankList.push({
-    name: '白鹭岛 ' + (i + 1) + ' 号店',
-    total: 1234.56 - i * 100
-})
-}
 export default {
 name: 'Analysis',
 mixins: [baseMixin],
@@ -95,7 +88,6 @@ components: {
 data () {
     return {
     loading: true,
-    rankList,
     records: [],
     countSortedList: [],
     signCountSortedList: [],
@@ -116,9 +108,6 @@ computed: {
 created () {
     this.doGetAllRecord()
     this.doGetClassroomRecord()
-    setTimeout(() => {
-    this.loading = !this.loading
-    }, 1000)
 },
 methods: {
     doGetAllRecord () {
@@ -148,6 +137,7 @@ methods: {
                 // 生成 sign_count 排序的列表
                 this.signCountSortedList = data.message.map(item => ({ name: item.classroom, total: item.sign_count }))
                 .sort((a, b) => b.total - a.total)
+                this.loading = false
             } else {
                 this.$message.error(data.message)
             }

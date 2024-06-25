@@ -80,7 +80,7 @@ const user = {
         // 请求后端获取用户信息 /api/user/info
         getInfo().then(response => {
           const { result } = response
-          console.log('result', result)
+          // console.log('result', result)
           if (result.role && result.role.permissions.length > 0) {
             const role = { ...result.role }
             role.permissions = result.role.permissions.map(permission => {
@@ -91,6 +91,10 @@ const user = {
               return per
             })
             role.permissionList = role.permissions.map(permission => { return permission.permissionId })
+            if (storage.get('role_id') === '2') {
+              role.permissionList.push('admin')
+            }
+            console.log('role', role.permissionList)
             // 覆盖响应体的 role, 供下游使用
             result.role = role
 

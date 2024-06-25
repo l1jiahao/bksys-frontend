@@ -168,7 +168,7 @@ export const asyncRouterMap = [
             path: '/history/check',
             name: 'DataAnalysis',
             component: () => import('@/views/history/DataAnalysis'),
-            meta: { title: '预约数据分析', permission: ['user'] }
+            meta: { title: '预约数据分析', permission: ['admin'] }
           }
         ]
       },
@@ -236,7 +236,7 @@ export const asyncRouterMap = [
             path: '/classroom/register',
             name: 'ClassroomRegister',
             component: () => import(/* webpackChunkName: "result" */ '@/views/classroom/AddressAdd'),
-            meta: { title: 'menu.classroom.register', keepAlive: true, hiddenHeaderContent: false, permission: ['user'] }
+            meta: { title: 'menu.classroom.register', keepAlive: true, hiddenHeaderContent: false, permission: ['admin'] }
           },
           {
             path: '/classroom/search',

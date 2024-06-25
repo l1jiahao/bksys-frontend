@@ -30,9 +30,6 @@ router.beforeEach((to, from, next) => {
         store
           .dispatch('GetInfo')
           .then(res => {
-            console.log('------')
-            console.log('res', res)
-            console.log('------')
             // 根据用户权限信息生成可访问的路由表
             store.dispatch('GenerateRoutes', { token, ...res }).then(() => {
               // 动态添加可访问路由表

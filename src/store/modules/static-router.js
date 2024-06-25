@@ -71,6 +71,7 @@ const permission = {
       return new Promise(resolve => {
         const { role } = data
         const routerMap = cloneDeep(asyncRouterMap)
+        console.log('GenerateRoutes', role)
         const accessedRouters = filterAsyncRouter(routerMap, role)
         commit('SET_ROUTERS', accessedRouters)
         resolve()
